@@ -1,0 +1,24 @@
+type: '@adam/people/enrich'
+typeVersion: 2026.03.31.1
+id: 1662ba41-7e38-4997-a3ba-dfcc326b2f7c
+name: people-enrich
+version: 1
+tags: {}
+inputs:
+  properties:
+    classifications:
+      type: array
+      description: Array of email classification results
+      items:
+        type: object
+  required:
+    - classifications
+globalArguments:
+  anthropicApiKey: ${{ vault.get(anthropic-secrets, ANTHROPIC_API_KEY) }}
+  model: "claude-opus-4-6"
+  peopleDir: "/home/adam/.openclaw/workspace/obsidian/People"
+  personTemplatePath: "/home/adam/.openclaw/workspace/obsidian/Templates/person.md"
+  classifications: ${{ inputs.classifications }}
+methods:
+  enrich:
+    arguments: {}

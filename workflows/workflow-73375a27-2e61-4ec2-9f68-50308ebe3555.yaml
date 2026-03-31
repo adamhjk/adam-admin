@@ -1,0 +1,106 @@
+id: 73375a27-2e61-4ec2-9f68-50308ebe3555
+name: email-triage
+description: Scan inbox, classify emails with AI, update Obsidian journal, label and archive
+tags: {}
+version: 1
+inputs:
+  properties:
+    maxMessages:
+      type: integer
+      default: 200
+      description: Maximum number of emails to process
+jobs:
+  - name: scan
+    description: Scan Gmail inbox for unread emails
+    steps:
+      - name: scan-inbox
+        description: Read all unread emails from inbox
+        task:
+          type: model_method
+          modelIdOrName: email-inbox
+          methodName: scan
+          inputs:
+            maxMessages: ${{ inputs.maxMessages }}
+    dependsOn: []
+
+  - name: classify
+    description: Classify each email using Claude AI
+    dependsOn:
+      - job: scan
+        condition:
+          type: succeeded
+    steps:
+      - name: classify-emails
+        description: Classify all emails with prompt-injection-safe Claude call
+        task:
+          type: model_method
+          modelIdOrName: email-classify
+          methodName: classify
+          inputs:
+            emails: ${{ data.findBySpec("email-inbox", "email").map(e, e.attributes) }}
+
+  - name: enrich
+    description: Create People entries for unknown To Reply senders
+    dependsOn:
+      - job: classify
+        condition:
+          type: succeeded
+    steps:
+      - name: enrich-people
+        description: Check People dir, fetch email history, summarize with Claude, create entries
+        task:
+          type: model_method
+          modelIdOrName: people-enrich
+          methodName: enrich
+          inputs:
+            classifications: ${{ data.findBySpec("email-classify", "classification").map(e, e.attributes) }}
+
+  - name: journal
+    description: Write classification results to Obsidian daily journal
+    dependsOn:
+      - job: classify
+        condition:
+          type: succeeded
+    steps:
+      - name: write-journal
+        description: Add To Reply tasks and To Read summaries to daily note
+        task:
+          type: model_method
+          modelIdOrName: email-journal
+          methodName: write
+          inputs:
+            classifications: ${{ data.findBySpec("email-classify", "classification").map(e, e.attributes) }}
+
+  - name: organize
+    description: Label and archive emails in Gmail
+    dependsOn:
+      - job: classify
+        condition:
+          type: succeeded
+    steps:
+      - name: organize-emails
+        description: Apply To Reply/To Read labels and remove from inbox
+        task:
+          type: model_method
+          modelIdOrName: email-organize
+          methodName: organize
+          inputs:
+            classifications: ${{ data.findBySpec("email-classify", "classification").map(e, e.attributes) }}
+
+  - name: sync
+    description: Sync Obsidian vault
+    dependsOn:
+      - job: journal
+        condition:
+          type: succeeded
+      - job: enrich
+        condition:
+          type: succeeded
+    steps:
+      - name: obs-sync
+        description: Run obs sync to push journal changes
+        task:
+          type: model_method
+          modelIdOrName: obs-sync
+          methodName: execute
+        allowFailure: true

@@ -1,0 +1,22 @@
+type: '@adam/journal/triage'
+typeVersion: 2026.03.31.1
+id: 13f300fa-969f-4618-a99e-59eefbd01856
+name: email-journal
+version: 1
+tags: {}
+inputs:
+  properties:
+    classifications:
+      type: array
+      description: Array of email classification results
+      items:
+        type: object
+  required:
+    - classifications
+globalArguments:
+  journalDir: "/home/adam/.openclaw/workspace/obsidian/Journal"
+  templatePath: "/home/adam/.openclaw/workspace/obsidian/Templates/daily.md"
+  classifications: ${{ inputs.classifications }}
+methods:
+  write:
+    arguments: {}

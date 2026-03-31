@@ -1,0 +1,24 @@
+type: '@adam/people/enrich'
+typeVersion: 2026.03.31.1
+id: f08a7d0d-1a45-4ef3-9d8e-0f74f51c9aef
+name: people-enrich-cal
+version: 1
+tags: {}
+inputs:
+  properties:
+    events:
+      type: array
+      description: Array of calendar events with attendees
+      items:
+        type: object
+  required:
+    - events
+globalArguments:
+  anthropicApiKey: ${{ vault.get(anthropic-secrets, ANTHROPIC_API_KEY) }}
+  model: "claude-opus-4-6"
+  peopleDir: "/home/adam/.openclaw/workspace/obsidian/People"
+  personTemplatePath: "/home/adam/.openclaw/workspace/obsidian/Templates/person.md"
+  events: ${{ inputs.events }}
+methods:
+  enrich:
+    arguments: {}

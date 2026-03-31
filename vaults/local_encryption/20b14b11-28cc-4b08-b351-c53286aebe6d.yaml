@@ -1,0 +1,7 @@
+id: 20b14b11-28cc-4b08-b351-c53286aebe6d
+name: anthropic-secrets
+type: local_encryption
+config:
+  auto_generate: true
+  base_dir: /home/adam/.openclaw/workspace/adam-admin
+createdAt: '2026-03-31T14:47:14.270Z'

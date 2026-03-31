@@ -1,0 +1,18 @@
+type: '@adam/email/inbox'
+typeVersion: 2026.03.31.1
+id: 475d8b47-ef4a-4e13-afec-89c0e66c95da
+name: email-inbox
+version: 1
+tags: {}
+inputs:
+  properties:
+    maxMessages:
+      type: integer
+      default: 200
+      description: Maximum number of emails to scan
+globalArguments:
+  maxMessages: ${{ inputs.maxMessages }}
+  query: "in:inbox"
+methods:
+  scan:
+    arguments: {}

@@ -1,0 +1,13 @@
+type: '@adam/calendar/today'
+typeVersion: 2026.03.31.1
+id: 196906ca-0a4a-448d-b45e-0dbfa2c18f9c
+name: calendar-today
+version: 1
+tags: {}
+globalArguments:
+  calendars:
+    - "adam@systeminit.com"
+    - "adam@stalecoffee.org"
+methods:
+  scan:
+    arguments: {}

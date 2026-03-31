@@ -1,0 +1,22 @@
+type: '@adam/journal/calendar'
+typeVersion: 2026.03.31.1
+id: 31a923f6-a8a7-42fd-856f-1f79005543b2
+name: calendar-journal
+version: 1
+tags: {}
+inputs:
+  properties:
+    events:
+      type: array
+      description: Array of calendar events
+      items:
+        type: object
+  required:
+    - events
+globalArguments:
+  journalDir: "/home/adam/.openclaw/workspace/obsidian/Journal"
+  templatePath: "/home/adam/.openclaw/workspace/obsidian/Templates/daily.md"
+  events: ${{ inputs.events }}
+methods:
+  write:
+    arguments: {}

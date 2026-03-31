@@ -1,0 +1,12 @@
+type: command/shell
+typeVersion: 2026.02.09.1
+id: 5eb68fa7-ec28-4115-994a-bbaa9c88fbf0
+name: obs-sync
+version: 1
+tags: {}
+globalArguments: {}
+methods:
+  execute:
+    arguments:
+      run: "ob sync --path /home/adam/.openclaw/workspace/obsidian"
+      timeout: 30000

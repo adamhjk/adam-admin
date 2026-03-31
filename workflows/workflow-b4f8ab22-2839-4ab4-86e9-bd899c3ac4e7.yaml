@@ -1,0 +1,66 @@
+id: b4f8ab22-2839-4ab4-86e9-bd899c3ac4e7
+name: calendar-triage
+description: Scan today's calendar, write events to journal with person links, enrich unknown attendees
+tags: {}
+version: 1
+jobs:
+  - name: scan
+    description: Scan today's calendar events
+    steps:
+      - name: scan-calendar
+        description: Read events from configured calendars
+        task:
+          type: model_method
+          modelIdOrName: calendar-today
+          methodName: scan
+    dependsOn: []
+
+  - name: enrich
+    description: Create People entries for unknown calendar attendees
+    dependsOn:
+      - job: scan
+        condition:
+          type: succeeded
+    steps:
+      - name: enrich-attendees
+        description: Check People dir and create entries for unknown attendees
+        task:
+          type: model_method
+          modelIdOrName: people-enrich-cal
+          methodName: enrich
+          inputs:
+            events: ${{ data.findBySpec("calendar-today", "event").map(e, e.attributes) }}
+
+  - name: journal
+    description: Write calendar events to daily journal
+    dependsOn:
+      - job: scan
+        condition:
+          type: succeeded
+    steps:
+      - name: write-calendar
+        description: Add calendar events as todo items in daily note
+        task:
+          type: model_method
+          modelIdOrName: calendar-journal
+          methodName: write
+          inputs:
+            events: ${{ data.findBySpec("calendar-today", "event").map(e, e.attributes) }}
+
+  - name: sync
+    description: Sync Obsidian vault
+    dependsOn:
+      - job: journal
+        condition:
+          type: succeeded
+      - job: enrich
+        condition:
+          type: succeeded
+    steps:
+      - name: obs-sync
+        description: Run ob sync to push journal and people changes
+        task:
+          type: model_method
+          modelIdOrName: obs-sync
+          methodName: execute
+        allowFailure: true

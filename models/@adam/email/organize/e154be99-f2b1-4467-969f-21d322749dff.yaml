@@ -1,0 +1,20 @@
+type: '@adam/email/organize'
+typeVersion: 2026.03.31.1
+id: e154be99-f2b1-4467-969f-21d322749dff
+name: email-organize
+version: 1
+tags: {}
+inputs:
+  properties:
+    classifications:
+      type: array
+      description: Array of email classification results
+      items:
+        type: object
+  required:
+    - classifications
+globalArguments:
+  classifications: ${{ inputs.classifications }}
+methods:
+  organize:
+    arguments: {}

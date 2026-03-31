@@ -1,0 +1,22 @@
+type: '@adam/email/classify'
+typeVersion: 2026.03.31.1
+id: 61f88754-5d5b-4605-a9d1-156b4cfce7d6
+name: email-classify
+version: 1
+tags: {}
+inputs:
+  properties:
+    emails:
+      type: array
+      description: Array of email objects from inbox scan
+      items:
+        type: object
+  required:
+    - emails
+globalArguments:
+  anthropicApiKey: ${{ vault.get(anthropic-secrets, ANTHROPIC_API_KEY) }}
+  model: "claude-opus-4-6"
+  emails: ${{ inputs.emails }}
+methods:
+  classify:
+    arguments: {}
