@@ -72,6 +72,14 @@ function sanitizeWikiName(s: string): string {
   return sanitize(s).replace(/\|/g, "");
 }
 
+// Prevent path traversal when using names in file paths
+function safeFileName(name: string): string {
+  return name
+    .replace(/\.\./g, "")
+    .replace(/[\/\\:\x00]/g, "")
+    .trim() || "unknown";
+}
+
 // Normalize messy sender names into clean "First Last" format.
 // Handles: email-as-name, "Last, First Middle DEPT, COUNTRY", etc.
 function normalizePersonName(from: { name: string | null; email: string }): string {
@@ -330,7 +338,7 @@ export const model = {
         const handles = [];
         for (let i = 0; i < uniquePeople.length; i++) {
           const { name, email } = uniquePeople[i];
-          const personPath = `${peopleDir}/${name}.md`;
+          const personPath = `${peopleDir}/${safeFileName(name)}.md`;
 
           if (await fileExists(personPath)) {
             context.logger.info("Person exists: {name}", { name });

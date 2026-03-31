@@ -72,7 +72,7 @@ async function classifyEmail(
   email: z.infer<typeof EmailInputSchema>,
   apiKey: string,
   model: string,
-): Promise<{ classification: "To Reply" | "To Read"; certainty: number; summary: string }> {
+): Promise<{ classification: "To Reply" | "To Read" | "Archive Only"; certainty: number; summary: string }> {
   const fromStr = email.from.name
     ? `${email.from.name} <${email.from.email}>`
     : email.from.email;
@@ -175,11 +175,24 @@ export const model = {
           try {
             const result = await classifyEmail(email, anthropicApiKey, modelName);
 
+            // Demote low-confidence "To Reply" to "Archive Only" to resist classification manipulation
+            const finalClassification =
+              result.classification === "To Reply" && result.certainty < 50
+                ? ("Archive Only" as const)
+                : result.classification;
+
+            if (finalClassification !== result.classification) {
+              context.logger.info(
+                "Demoted low-confidence ({cert}%) To Reply to Archive Only: {subject}",
+                { cert: result.certainty, subject: email.subject },
+              );
+            }
+
             const classificationData = {
               messageId: email.id,
               from: email.from,
               subject: email.subject,
-              classification: result.classification,
+              classification: finalClassification,
               certainty: result.certainty,
               summary: result.summary,
             };
@@ -210,12 +223,12 @@ export const model = {
               { id: email.id, error: (err as Error).message },
             );
 
-            // Fallback: classify as "To Read" on error
+            // Fallback: classify as "Archive Only" on error — don't reward adversarial emails with attention
             const fallback = {
               messageId: email.id,
               from: email.from,
               subject: email.subject,
-              classification: "To Read" as const,
+              classification: "Archive Only" as const,
               certainty: 0,
               summary: `Classification failed: ${(err as Error).message}`,
             };
