@@ -15,7 +15,7 @@ inputs:
     - events
 globalArguments:
   anthropicApiKey: ${{ vault.get(anthropic-secrets, ANTHROPIC_API_KEY) }}
-  model: "claude-opus-4-6"
+  model: "claude-sonnet-4-6"
   peopleDir: "/home/adam/.openclaw/workspace/obsidian/People"
   personTemplatePath: "/home/adam/.openclaw/workspace/obsidian/Templates/person.md"
   events: ${{ inputs.events }}

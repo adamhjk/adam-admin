@@ -15,7 +15,7 @@ inputs:
     - emails
 globalArguments:
   anthropicApiKey: ${{ vault.get(anthropic-secrets, ANTHROPIC_API_KEY) }}
-  model: "claude-opus-4-6"
+  model: "claude-sonnet-4-6"
   emails: ${{ inputs.emails }}
 methods:
   classify:
