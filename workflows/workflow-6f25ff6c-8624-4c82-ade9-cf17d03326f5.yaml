@@ -1,0 +1,16 @@
+id: 6f25ff6c-8624-4c82-ade9-cf17d03326f5
+name: shire-weather-check
+description: Fetch current weather conditions at the Shire (Hobbiton, Matamata NZ) from Open-Meteo
+tags: {}
+version: 1
+jobs:
+  - name: fetch-weather
+    description: Fetch weather from Open-Meteo for the Shire
+    steps:
+      - name: fetch
+        description: Call Open-Meteo API and store weather data
+        task:
+          type: model_method
+          modelIdOrName: shire-weather
+          methodName: fetch
+    dependsOn: []

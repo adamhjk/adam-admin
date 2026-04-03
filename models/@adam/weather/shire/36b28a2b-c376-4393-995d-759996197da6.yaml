@@ -1,0 +1,8 @@
+type: '@adam/weather/shire'
+typeVersion: 2026.04.03.1
+id: 36b28a2b-c376-4393-995d-759996197da6
+name: shire-weather
+version: 1
+tags: {}
+globalArguments: {}
+methods: {}
